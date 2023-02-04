@@ -2,11 +2,12 @@ from pathlib import Path
 import pandas as pd
 from prefect import flow, task
 from prefect_gcp.cloud_storage import GcsBucket
-from prefect.tasks import task_input_hash
+# from prefect.tasks import task_input_hash
 from datetime import timedelta
 
 
-@task(log_prints=True, retries=1, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+# @task(log_prints=True, retries=1, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+@task(retries=1)
 def fetch(dataset_url: str) -> pd.DataFrame:
     """Read data from web as pandas DataFrame"""
     df = pd.read_csv(dataset_url)
@@ -27,7 +28,9 @@ def clean(df=pd.DataFrame) -> pd.DataFrame:
 @task(log_prints=True, retries=1)
 def write_local(df: pd.DataFrame, color: str, dataset_file: str) -> Path:
     """Wrtie DataFrame out as parquet file"""
-    path = Path(f"./data/{color}/{dataset_file}.parquet")
+    data_dir = f'data/{color}'
+    Path(data_dir).mkdir(parents=True, exist_ok=True)
+    path = Path(f"{data_dir}/{dataset_file}.parquet")
     df.to_parquet(path, compression="gzip")
     return path
 
@@ -52,7 +55,7 @@ def etl_web_to_gcs(year: int, month: int, color: str) -> None:
     write_gcs(path)
 
 
-@flow(name="ETL parent flow")
+@flow(name="etl-parent-flow")
 def etl_parent_flow(months: list[int] = [1, 2], year: int = 2021, color: str = "yellow"):
     for month in months:
         etl_web_to_gcs(year, month, color)

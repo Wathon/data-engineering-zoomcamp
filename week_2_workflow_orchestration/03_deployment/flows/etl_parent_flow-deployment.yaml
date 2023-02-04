@@ -1,14 +1,17 @@
 ###
-### A complete description of a Prefect Deployment for flow 'ETL parent flow'
+### A complete description of a Prefect Deployment for flow 'etl-parent-flow'
 ###
-name: Parameterized ETL
+name: etl2
 description: null
-version: bb1794fa8141d0b75ea0ab2104229925
+version: d4bce042bec7f44487432ebcd4049176
 # The work queue that will handle this deployment's runs
 work_queue_name: default
 tags: []
-parameters: {"months":[1, 2], "year":2021, "color": "yellow"}
-schedule: null
+parameters: {}
+schedule:
+  cron: 0 0 * * *
+  timezone: null
+  day_or: true
 infra_overrides: {}
 infrastructure:
   type: process
@@ -24,10 +27,10 @@ infrastructure:
 ###
 ### DO NOT EDIT BELOW THIS LINE
 ###
-flow_name: ETL parent flow
+flow_name: etl-parent-flow
 manifest_path: null
 storage: null
-path: /Users/wathon/Workspace/data-engineering-zoomcamp/week_2_workflow_orchestration/03_flow
+path: /Users/wathon/Workspace/data-engineering-zoomcamp/week_2_workflow_orchestration/03_deployment/flows
 entrypoint: parameterized_flow.py:etl_parent_flow
 parameter_openapi_schema:
   title: Parameters
